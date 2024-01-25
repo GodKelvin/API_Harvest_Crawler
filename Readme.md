@@ -1,6 +1,2 @@
-# Npm Init e dependências necessárias
-``` npm i express puppeteer ```
-
-## Dev dependências
-```npm i -D typescript @types/express @types/node @types/puppeteer nodemon ts-node tslint dotenv```
-
+# PSPrices
+Capturando os preços de jogos de uma certa loja online...
