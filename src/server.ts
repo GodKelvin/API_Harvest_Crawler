@@ -1,6 +1,10 @@
 
 import express from 'express';
 import routes from "./app/routes/routes";
+import dotenv from 'dotenv';
+
+//Carregando variaveis de ambiente
+dotenv.config();
 
 const server = express();
 server.use(routes);
