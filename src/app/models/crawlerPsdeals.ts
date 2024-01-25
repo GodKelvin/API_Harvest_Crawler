@@ -15,11 +15,18 @@ export class CrawlerPsdeals{
 
   public async getDeals(): Promise<any>{
     let deals = await this.scrapping();
-    return deals;
+    let response = deals;
+    let i = 2;
+    while(deals.length){
+      deals = await this.scrapping(i);
+      response = [...response, ...deals]
+      i++;
+    }
+    return response;
   }
 
 
-  private async scrapping(index=0, all=true, jogoCompleto=false){
+  private async scrapping(index=1){
     let browser = await launch({
       headless: 'new',
       args: [
@@ -29,10 +36,12 @@ export class CrawlerPsdeals{
           "--no-zygote"
       ]
     });
-
+    
     let page = await browser.newPage();
+
+    //Acessa o endereco e aguarda que todas as tarefas de network estejam completas antes de crawlear
     await page.goto(`${this.link}/${this.busca}/${index}`, {
-      waitUntil: "load",
+      waitUntil: "networkidle0",
       timeout: 0
     });
 
@@ -55,6 +64,7 @@ export class CrawlerPsdeals{
       });
     });
 
+    await browser.close();
     return pageContent;
   }
 }
