@@ -4,8 +4,8 @@ import { launch } from "puppeteer";
 export class CrawlerPsdeals{
   private link: any = process.env.ALVO_CRAWLER_PSN;
   private busca: string;
-  private completeGame = [null, "PACOTE DO JOGO", "EDIÇÃO PREMIUM"];
-  private DLC = ["EXPANSÃO", "PACOTE DE EXPANSÕES"]
+  private completeGame = ["JOGO BASE", "PACOTE DO JOGO", "EDIÇÃO PREMIUM"];
+  private DLC = ["EXPANSÃO", "PACOTE DE EXPANSÕES"];
 
 
 
@@ -13,7 +13,7 @@ export class CrawlerPsdeals{
     this.busca = busca;
   }
 
-  public async getDeals(): Promise<any>{
+  public async getDeals(option:any = null): Promise<IPsdeals[]>{
     let deals = await this.scrapping();
     let response = deals;
     let i = 2;
@@ -22,11 +22,18 @@ export class CrawlerPsdeals{
       response = [...response, ...deals]
       i++;
     }
+
+    response = await this.filter(response, option);
+
     return response;
   }
 
+  private async filter(deals: IPsdeals[], option: string): Promise<IPsdeals[]>{
+    if(option == "jogo completo") deals = deals.filter(deal => this.completeGame.includes(deal.type))
+    return deals;
+  }
 
-  private async scrapping(index=1){
+  private async scrapping(index=1): Promise<IPsdeals[]>{
     let browser = await launch({
       headless: 'new',
       args: [
@@ -47,7 +54,16 @@ export class CrawlerPsdeals{
 
     await page.screenshot({path: "screenshot_page.png"});
 
-    const pageContent: any = await page.evaluate(() => {
+    let pageContent = await page.evaluate(() => {
+      function getPreco(price: string): Number{
+        let cleanPrice = price.replace(',', '.').replace(/[^\d.]/g, '');
+        return cleanPrice === "" ? 0 : Number(cleanPrice);
+      }
+
+      //Capturando a pagina do jogo
+      const urlSegments = window.location.pathname.split('/');
+      const pageId = urlSegments[urlSegments.length - 1];
+
       //Procure todas as divs que comecam com "search#productTile" e terminam com "details"
       const divs = [...document.querySelectorAll('section[data-qa^="search#productTile"][data-qa$="#details"]')];
 
@@ -60,9 +76,9 @@ export class CrawlerPsdeals{
         let name = el.querySelector("span[data-qa^='search#'][data-qa$='name']").innerText;
         let price = el.querySelector("span[data-qa^='search#'][data-qa$='price']").innerText;
 
-        return {type, name, price};
+        return {type: type, name: name, price: getPreco(price), page: Number(pageId)};
       });
-    });
+    }) as IPsdeals[];
 
     await browser.close();
     return pageContent;
