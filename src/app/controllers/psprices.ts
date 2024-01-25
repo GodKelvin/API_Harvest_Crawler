@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { CrawlerPsdeals } from "../models/crawlerPsdeals";
+import { CrawlerPsdeals } from "../models/crawlerPs";
 
 const psdealsRouter = Router();
 

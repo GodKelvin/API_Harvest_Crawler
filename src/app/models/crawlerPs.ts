@@ -1,4 +1,4 @@
-import { IPsdeals } from "../interfaces/psdeals";
+import { IPsdeals } from "../interfaces/psprices";
 import { launch } from "puppeteer";
 
 export class CrawlerPsdeals{
