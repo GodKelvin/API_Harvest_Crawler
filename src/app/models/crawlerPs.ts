@@ -57,6 +57,7 @@ export class CrawlerPsdeals{
 
     let pageContent = await page.evaluate(() => {
       function getPreco(price: string): Number{
+        if(!price) return 0;
         let cleanPrice = price.replace(',', '.').replace(/[^\d.]/g, '');
         return cleanPrice === "" ? 0 : Number(cleanPrice);
       }
@@ -74,8 +75,8 @@ export class CrawlerPsdeals{
       //Para cada div, captura os dados dos jogos
       return divs.map((el: any) => {
         let type = el.querySelector("span[data-qa^='search#'][data-qa$='type']")?.innerText || "JOGO BASE";
-        let name = el.querySelector("span[data-qa^='search#'][data-qa$='name']").innerText;
-        let price = el.querySelector("span[data-qa^='search#'][data-qa$='price']").innerText;
+        let name = el.querySelector("span[data-qa^='search#'][data-qa$='name']")?.innerText || null;
+        let price = el.querySelector("span[data-qa^='search#'][data-qa$='price']")?.innerText || null;
 
         return {type: type, name: name, price: getPreco(price), page: Number(pageId)};
       });
