@@ -1,5 +1,5 @@
 import { IPsdeals } from "../interfaces/psprices";
-import { launch } from "puppeteer";
+import puppeteer, { launch } from "puppeteer";
 
 export class CrawlerPsdeals{
   private link: any = process.env.ALVO_CRAWLER_PSN;
@@ -41,7 +41,8 @@ export class CrawlerPsdeals{
           "--no-sandbox",
           "--single-process",
           "--no-zygote"
-      ]
+      ],
+      executablePath: process.env.NODE_ENV == "production" ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath()
     });
     
     let page = await browser.newPage();
