@@ -1,4 +1,4 @@
-import { IPsdeals } from "../interfaces/psprices";
+import { IPsprices } from "../interfaces/psprices";
 import puppeteer, { launch } from "puppeteer";
 
 export class CrawlerPsdeals{
@@ -13,7 +13,7 @@ export class CrawlerPsdeals{
     this.busca = busca;
   }
 
-  public async getDeals(option:any = null): Promise<IPsdeals[]>{
+  public async getDeals(option:any = null): Promise<IPsprices[]>{
     let deals = await this.scrapping();
     let response = deals;
     let i = 2;
@@ -28,12 +28,12 @@ export class CrawlerPsdeals{
     return response;
   }
 
-  private async filter(deals: IPsdeals[], option: string): Promise<IPsdeals[]>{
+  private async filter(deals: IPsprices[], option: string): Promise<IPsprices[]>{
     if(option == "jogo completo") deals = deals.filter(deal => this.completeGame.includes(deal.type))
     return deals;
   }
 
-  private async scrapping(index=1): Promise<IPsdeals[]>{
+  private async scrapping(index=1): Promise<IPsprices[]>{
     let browser = await launch({
       headless: 'new',
       args: [
@@ -79,7 +79,7 @@ export class CrawlerPsdeals{
 
         return {type: type, name: name, price: getPreco(price), page: Number(pageId)};
       });
-    }) as IPsdeals[];
+    }) as IPsprices[];
 
     await browser.close();
     return pageContent;

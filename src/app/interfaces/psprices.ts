@@ -1,4 +1,4 @@
-export interface IPsdeals{
+export interface IPsprices{
   type: string;
   name: string;
   price: number;
