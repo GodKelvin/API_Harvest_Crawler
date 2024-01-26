@@ -2,11 +2,13 @@
 import express from 'express';
 import routes from "./app/routes/routes";
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 //Carregando variaveis de ambiente
 dotenv.config();
 
 const server = express();
+server.use(cors());
 server.use(routes);
 
 
