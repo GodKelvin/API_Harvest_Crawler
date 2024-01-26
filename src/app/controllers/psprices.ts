@@ -10,7 +10,7 @@ psdealsRouter.get("/", async(req: Request, res: Response): Promise<any> => {
     let dataCrawler = await crawler.getDeals(String(req.query.option));
     return res.status(200).json({totalSearch: dataCrawler.length, results: dataCrawler});
   }catch(error){
-    return res.status(500).json(`Internal Server Error => ${error}`);
+    return res.status(500).json({error: `Internal Server Error => ${error}`});
   }
 });
 
