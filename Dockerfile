@@ -1,4 +1,4 @@
-FROM puppeteer/core:latest
+FROM pull ghcr.io/puppeteer/puppeteer:21.10.0
 
 # Instale o Google Chrome
 RUN apt-get update && apt-get install -y \
