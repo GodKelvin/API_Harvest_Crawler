@@ -1,2 +1,3 @@
-# PSPrices
-Capturando os preços de jogos de uma certa loja online...
+# Harvest Crawler
+Just an API to collect whatever you want
+
