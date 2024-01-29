@@ -1,13 +1,11 @@
 import { IPsprices } from "../interfaces/psprices";
-import puppeteer, { launch } from "puppeteer";
+import { launch } from "puppeteer-core";
 
 export class CrawlerPsdeals{
   private link: any = process.env.ALVO_CRAWLER_PSN;
   private busca: string;
   private completeGame = ["JOGO BASE", "PACOTE DO JOGO", "EDIÇÃO PREMIUM"];
   private DLC = ["EXPANSÃO", "PACOTE DE EXPANSÕES"];
-
-
 
   constructor(busca: string){
     this.busca = busca;
@@ -42,7 +40,7 @@ export class CrawlerPsdeals{
           "--single-process",
           "--no-zygote"
       ],
-      executablePath: process.env.NODE_ENV == "production" ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath()
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH
     });
     
     let page = await browser.newPage();
