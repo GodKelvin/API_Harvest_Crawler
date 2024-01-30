@@ -14,5 +14,5 @@ server.use(routes);
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
-    console.log(`Servidor running on port ${port}, acess: http://localhost:${port}/`);
+    console.log(`Servidor running on port ${port}, access: http://localhost:${port}/`);
 });

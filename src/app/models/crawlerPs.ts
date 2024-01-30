@@ -1,5 +1,5 @@
 import { IPsprices } from "../interfaces/psprices";
-import { launch } from "puppeteer-core";
+import { Browser, launch } from "puppeteer-core";
 
 export class CrawlerPsdeals{
   private link: any = process.env.ALVO_CRAWLER_PSN;
@@ -11,28 +11,8 @@ export class CrawlerPsdeals{
     this.busca = busca;
   }
 
-  public async getDeals(option:any = null): Promise<IPsprices[]>{
-    let deals = await this.scrapping();
-    let response = deals;
-    let i = 2;
-    while(deals.length){
-      deals = await this.scrapping(i);
-      response = [...response, ...deals]
-      i++;
-    }
-
-    response = await this.filter(response, option);
-
-    return response;
-  }
-
-  private async filter(deals: IPsprices[], option: string): Promise<IPsprices[]>{
-    if(option == "jogo completo") deals = deals.filter(deal => this.completeGame.includes(deal.type))
-    return deals;
-  }
-
-  private async scrapping(index=1): Promise<IPsprices[]>{
-    let browser = await launch({
+  private async getBrowser(): Promise<Browser>{
+    return await launch({
       headless: 'new',
       args: [
           "--disable-setuid-sandbox",
@@ -42,16 +22,39 @@ export class CrawlerPsdeals{
       ],
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH
     });
-    
-    let page = await browser.newPage();
+  }
 
+  public async getDeals(option:string = ""): Promise<IPsprices[]>{
+    const browser = await this.getBrowser();
+    const allDeals = [];
+    let pageIndex = 1;
+    let dealsOnPage;
+
+    do{
+      dealsOnPage = await this.scrapping(browser, pageIndex);
+      allDeals.push(...dealsOnPage);
+      pageIndex++;
+    }while(dealsOnPage.length);
+    browser.close();
+
+    const dealsFilter = await this.filter(allDeals, option);
+    return dealsFilter;
+  }
+
+  private async filter(deals: IPsprices[], option: string): Promise<IPsprices[]>{
+    if(option == "jogo completo") deals = deals.filter(deal => this.completeGame.includes(deal.type))
+    return deals;
+  }
+
+  private async scrapping(browser: Browser, index=1): Promise<IPsprices[]>{
+    let page = await browser.newPage();
     //Acessa o endereco e aguarda que todas as tarefas de network estejam completas antes de crawlear
     await page.goto(`${this.link}/${this.busca}/${index}`, {
       waitUntil: "networkidle0",
       timeout: 0
     });
 
-    await page.screenshot({path: "screenshot_page.png"});
+    //await page.screenshot({path: "screenshot_page.png"});
 
     let pageContent = await page.evaluate(() => {
       function getPreco(price: string): Number{
@@ -79,8 +82,6 @@ export class CrawlerPsdeals{
         return {type: type, name: name, price: getPreco(price), page: Number(pageId)};
       });
     }) as IPsprices[];
-
-    await browser.close();
     return pageContent;
   }
 }
