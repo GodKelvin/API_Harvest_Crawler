@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, TextChannel } from 'discord.js';
+import { Client, GatewayIntentBits, TextChannel, Message} from 'discord.js';
 export class DiscordBot{
     private client: Client;
     constructor(){
@@ -17,12 +17,16 @@ export class DiscordBot{
     }
 
     public async sendJson(message: any): Promise<void>{
-        this.client.once("ready", async () => {
-            const channel = this.client.channels.cache.get(String(process.env.CHANNEL_ID)) as TextChannel;
-            if(channel){
-                channel.send(`\`\`\`json\n${message}\n\`\`\``).catch(console.error);
-            }
-            return;
-        })
+        const formatedMessage = `\`\`\`json\n${message}\n\`\`\``;
+        if(formatedMessage.length < 4000){
+            this.client.once("ready", async () => {
+                const channel = this.client.channels.cache.get(String(process.env.CHANNEL_ID)) as TextChannel;
+                if(channel){
+                    await channel.send(formatedMessage);
+                    await this.client.destroy();
+                }
+            });
+        }
+        return;
     }
 }
