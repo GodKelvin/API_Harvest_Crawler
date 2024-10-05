@@ -46,7 +46,6 @@ export class CrawlerPsdeals{
     });
     
     let page = await browser.newPage();
-
     //Acessa o endereco e aguarda que todas as tarefas de network estejam completas antes de crawlear
     await page.goto(`${this.link}/${this.busca}/${index}`, {
       waitUntil: "networkidle0",

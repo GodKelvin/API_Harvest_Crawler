@@ -3,3 +3,4 @@ dist/
 .env
 src/database/uploads/*
 screenshot_page.png
+.vscode
